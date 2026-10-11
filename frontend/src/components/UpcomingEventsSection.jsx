@@ -60,6 +60,50 @@ const EventCard = ({ event }) => {
   // Format date display
   const displayDate = event.dateLabel || event.date || 'Upcoming';
 
+  const getEventPoster = (ev) => {
+    const raw = ev.posterImage || ev.backdropImage;
+    const isBad = !raw || 
+      typeof raw !== 'string' || 
+      raw.includes('o2_assets') || 
+      raw.includes('edition_assets') || 
+      raw.includes('7578f6353195a792b3526f691287be4a1742904947') ||
+      raw.includes('fb7a705e0ecb73494655f6a082a898be1742905087') ||
+      raw.includes('c14de0ff254f0cac2316900cbeb5ca4e1742906714') ||
+      raw.includes('21ebc1fe6df75df6159d00e9ab651d681742906748');
+
+    if (!isBad) return raw;
+
+    const cat = (ev.category || '').toLowerCase();
+    const title = (ev.title || '').toLowerCase();
+
+    if (title.includes('samay') || title.includes('raina') || title.includes('zeroo') || title.includes('kapruwan')) {
+      return 'https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=800&auto=format&fit=crop&q=80';
+    }
+    if (title.includes('zakir')) {
+      return 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&auto=format&fit=crop&q=80';
+    }
+    if (title.includes('bassi') || title.includes('kenny') || title.includes('kanan')) {
+      return 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=800&auto=format&fit=crop&q=80';
+    }
+    if (title.includes('hauz khas') || title.includes('south delhi') || title.includes('vyatha') || title.includes('lineup')) {
+      return 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80';
+    }
+    if (title.includes('diljit') || title.includes('arijit') || title.includes('kuhad') || title.includes('divine')) {
+      return 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop&q=80';
+    }
+    if (title.includes('sunburn') || title.includes('hilltop') || cat.includes('festival')) {
+      return 'https://images.unsplash.com/photo-1468359601543-843bfaef291a?w=800&auto=format&fit=crop&q=80';
+    }
+    if (cat.includes('theatre') || cat.includes('art')) {
+      return 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=800&auto=format&fit=crop&q=80';
+    }
+    if (cat.includes('music') || cat.includes('concert')) {
+      return 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80';
+    }
+
+    return 'https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=800&auto=format&fit=crop&q=80';
+  };
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -81,11 +125,14 @@ const EventCard = ({ event }) => {
           />
         ) : (
           <img
-            src={event.posterImage || event.backdropImage || '/images/events/events_hero.jpg'}
+            src={getEventPoster(event)}
             alt={event.title}
             loading="lazy"
             decoding="async"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              e.target.src = 'https://images.unsplash.com/photo-1585699324551-f6c309eedeca?w=800&auto=format&fit=crop&q=80';
+            }}
           />
         )}
 
