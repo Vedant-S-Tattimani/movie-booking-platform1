@@ -126,7 +126,7 @@ export const BookingPage = () => {
         let isMounted = true;
         (async () => {
             try {
-                const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime);
+                const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime, movieId);
                 if (isMounted) {
                     setOccupiedSeats(seats || []);
                     setSelectedSeats((prev) => prev.filter((s) => !seats.includes(s)));
@@ -138,7 +138,7 @@ export const BookingPage = () => {
         return () => {
             isMounted = false;
         };
-    }, [selectedTheatre, selectedDate, selectedTime]);
+    }, [selectedTheatre, selectedDate, selectedTime, movieId]);
 
     // Countdown timer effect when seats are selected
     useEffect(() => {
@@ -263,6 +263,8 @@ export const BookingPage = () => {
             });
             if (response.success && response.booking) {
                 sessionStorage.removeItem('tt_pending_booking');
+                setOccupiedSeats((prev) => Array.from(new Set([...prev, ...selectedSeats])));
+                setSelectedSeats([]);
                 navigate('/payment', {
                     state: {
                         booking: {
@@ -284,7 +286,7 @@ export const BookingPage = () => {
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'An error occurred during booking';
             setErrorMessage(msg);
-            const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime);
+            const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime, movieId);
             setOccupiedSeats(seats);
         } finally {
             setIsSubmitting(false);

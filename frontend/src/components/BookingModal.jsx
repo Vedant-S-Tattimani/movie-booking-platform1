@@ -88,7 +88,7 @@ export const BookingModal = ({ item, onClose }) => {
         let isMounted = true;
         (async () => {
             try {
-                const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime);
+                const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime, item?.id);
                 if (isMounted) {
                     setOccupiedSeats(seats || []);
                     setSelectedSeats((prev) => prev.filter((s) => !seats.includes(s)));
@@ -100,7 +100,7 @@ export const BookingModal = ({ item, onClose }) => {
         return () => {
             isMounted = false;
         };
-    }, [selectedTheatre, selectedDate, selectedTime]);
+    }, [selectedTheatre, selectedDate, selectedTime, item?.id]);
 
     if (!item) return null;
 
@@ -146,6 +146,8 @@ export const BookingModal = ({ item, onClose }) => {
             });
             if (response.success && response.booking) {
                 setConfirmedBooking(response.booking);
+                setOccupiedSeats((prev) => Array.from(new Set([...prev, ...selectedSeats])));
+                setSelectedSeats([]);
                 setStep('confirmed');
             } else {
                 throw new Error(response.error || 'Failed to complete booking');
@@ -153,7 +155,7 @@ export const BookingModal = ({ item, onClose }) => {
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Reservation failed';
             setErrorMessage(msg);
-            const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime);
+            const seats = await api.getOccupiedSeats(selectedTheatre, selectedDate, selectedTime, item?.id);
             setOccupiedSeats(seats);
         } finally {
             setIsSubmitting(false);
